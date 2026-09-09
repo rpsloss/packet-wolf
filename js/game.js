@@ -22,6 +22,20 @@
     { kind: "malware", lane: 2, hint: "RED — SPACE TO DROP" },
     { kind: "c2", lane: 0, hint: "C2 IS FAST — DROP IT" },
   ];
+  const OPS = [
+    "INTAKE",
+    "BOUNDARY WATCH",
+    "C2 FLOOD",
+    "STIG SWEEP",
+    "CUI LANE",
+    "BEACON STORM",
+    "PPSM HOLD",
+    "ZERO TRUST",
+    "EXFIL ATTEMPT",
+    "CAT I",
+    "ASSESS-ONLY",
+    "EMASS GATE",
+  ];
 
   const TYPES = {
     legit: { drop: false, speed: 1, score: 80, pass: 15, color: "#3dff8a", label: "ALLOW" },
@@ -48,6 +62,7 @@
   const startBtn = document.getElementById("startBtn");
   const allowBtn = document.getElementById("allowBtn");
   const dropBtn = document.getElementById("dropBtn");
+  const stingEl = document.getElementById("sting");
 
   const images = {};
   const idle = [];
@@ -84,6 +99,7 @@
   let burstLeft = 0;
   let queued = null;
   let heartT = 0;
+  let ocT = 0;
   let packets = [];
   let fx = [];
   let floaters = [];
@@ -167,6 +183,41 @@
 
   function chord(freqs, dur, vol = 0.03) {
     freqs.forEach((f, i) => tone(f, dur, i ? "triangle" : "square", vol, 0));
+  }
+
+  function notesAt(pairs) {
+    pairs.forEach(([f, wait, dur, type, vol]) => {
+      window.setTimeout(() => tone(f, dur, type || "square", vol || 0.04), wait);
+    });
+  }
+
+  function titleTheme() {
+    notesAt([
+      [196, 0, 0.16, "square", 0.045],
+      [247, 140, 0.16, "square", 0.045],
+      [294, 280, 0.16, "square", 0.045],
+      [392, 420, 0.28, "triangle", 0.05],
+    ]);
+    window.setTimeout(() => chord([196, 247, 294], 0.45, 0.028), 580);
+  }
+
+  function opSting() {
+    notesAt([
+      [262, 0, 0.1, "square", 0.04],
+      [330, 90, 0.14, "triangle", 0.04],
+    ]);
+  }
+
+  function burstSting() {
+    noiseBurst(0.14, 0.045);
+    notesAt([
+      [196, 0, 0.14, "sawtooth", 0.05],
+      [147, 110, 0.2, "sawtooth", 0.05],
+    ]);
+  }
+
+  function opName(w) {
+    return OPS[(Math.max(1, w) - 1) % OPS.length];
   }
 
   function noiseBurst(dur = 0.12, vol = 0.04) {
@@ -254,7 +305,7 @@
     el.innerHTML = b
       .map(
         (r, i) =>
-          `<li><b>${r.score}</b><span>${r.rank}</span><em>W${r.wave}</em></li>`
+          `<li><b>${r.score}</b><span>${r.rank}</span><em>${opName(r.wave)}</em></li>`
       )
       .join("");
   }
@@ -276,7 +327,7 @@
 
   function hudSync() {
     scoreEl.textContent = String(score);
-    waveEl.textContent = String(wave);
+    waveEl.textContent = opName(wave);
     comboEl.textContent = fever() ? `×${combo} OC` : `×${combo}`;
     comboBlock.classList.toggle("hot", combo >= 5);
     comboBlock.classList.toggle("fever", fever());
@@ -338,6 +389,7 @@
     burstLeft = 0;
     queued = null;
     heartT = 0;
+    ocT = 0;
     packets = [];
     fx = [];
     floaters = [];
@@ -354,23 +406,22 @@
     const interval = Math.max(0.4, 1.22 - t * 0.02);
     const w = 1 + Math.floor(elapsed / 18);
     if (w !== wave) {
-      if (cleanWave && wave >= 1) {
-        const bonus = 200 * wave;
-        addScore(bonus);
-        toast(`CLEAN WAVE +${bonus}`, "#3dff8a", 900);
-        chord([330, 415, 494], 0.18, 0.035);
-      } else {
-        toast(`WAVE ${w}`, "#3ee0ff", 800);
-        tone(220, 0.08, "square", 0.05);
-        tone(330, 0.12, "square", 0.05);
-      }
+      const finished = wave;
+      const name = opName(w);
+      const held = cleanWave;
+      if (held) addScore(200 * finished);
       wave = w;
       cleanWave = true;
-      if (wave > 1 && wave % 3 === 0) {
+      if (wave % 3 === 0) {
         burstLeft = 6;
-        toast("BURST TRAFFIC", "#c084ff", 900);
-        noiseBurst(0.12, 0.05);
-        tone(196, 0.16, "sawtooth", 0.05, 80);
+        toast(name, "#c084ff", 1000);
+        burstSting();
+      } else if (held) {
+        toast(`BOUNDARY HELD · ${name} +${200 * finished}`, "#3dff8a", 950);
+        chord([330, 415, 494], 0.2, 0.035);
+      } else {
+        toast(name, "#3ee0ff", 850);
+        opSting();
       }
     }
     return { speed, interval };
@@ -630,7 +681,7 @@
     const judged = dropped + stamped + breaches + falsePos;
     const acc = judged ? Math.round((100 * (dropped + stamped)) / judged) : 0;
     const boardHtml = board()
-      .map((r) => `<li><b>${r.score}</b><span>${r.rank}</span><em>W${r.wave}</em></li>`)
+      .map((r) => `<li><b>${r.score}</b><span>${r.rank}</span><em>${opName(r.wave)}</em></li>`)
       .join("");
     overlay.innerHTML = `
       <div class="panel over">
@@ -646,7 +697,7 @@
           <li>PERFECTS <b>${perfects}</b></li>
           <li>FALSE POSITIVES <b>${falsePos}</b></li>
           <li>MAX COMBO <b>×${bestCombo}</b></li>
-          <li>WAVE <b>${wave}</b></li>
+          <li>OP <b>${opName(wave)}</b></li>
         </ul>
         <ol class="board">${boardHtml}</ol>
         <button id="againBtn" type="button">PRESS SPACE TO REDEPLOY</button>
@@ -655,19 +706,30 @@
     tone(200, 0.4, "sawtooth", 0.06, -160);
   }
 
+  function setSting(on) {
+    if (!stingEl) return;
+    if (on) {
+      stingEl.classList.add("show");
+      stingEl.play().catch(() => {});
+    } else {
+      stingEl.classList.remove("show");
+      stingEl.pause();
+    }
+  }
+
   function start() {
     if (mode === "playing") return;
     ensureAudio();
     overlay.classList.add("hidden");
     overlay.innerHTML = "";
     pauseEl.classList.add("hidden");
+    setSting(false);
     resetRun();
     mode = "playing";
     startDrone();
     setDroneMute();
-    toast("DEFEND THE BOUNDARY", "#3ee0ff", 800);
-    tone(330, 0.1, "square", 0.05);
-    tone(440, 0.14, "square", 0.05);
+    toast("OP · " + opName(1), "#3ee0ff", 900);
+    titleTheme();
   }
 
   function togglePause() {
@@ -690,6 +752,7 @@
     actionsEl.hidden = true;
     overlay.classList.remove("hidden");
     frameEl.classList.remove("fever", "critical");
+    setSting(true);
     setBest(best());
     renderBoard(boardEl);
   }
@@ -955,12 +1018,25 @@
       }
     }
 
+    if (fever()) {
+      ocT += dt;
+      if (ocT >= 0.82) {
+        ocT = 0;
+        tone(392 + (combo % 6) * 24, 0.07, "triangle", 0.022);
+      }
+    } else {
+      ocT = 0;
+    }
+
     if (integrity === 1) {
       heartT += dt;
-      if (heartT >= 0.72) {
+      if (heartT >= 0.86) {
         heartT = 0;
         flash = Math.max(flash, 0.18);
-        tone(64, 0.09, "sine", 0.055);
+        tone(58, 0.08, "sine", 0.06);
+        window.setTimeout(() => {
+          if (!muted && integrity === 1 && mode === "playing") tone(74, 0.1, "sine", 0.05);
+        }, 150);
       }
     } else {
       heartT = 0;

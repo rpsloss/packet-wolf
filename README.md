@@ -39,6 +39,6 @@ On-screen ALLOW / DROP buttons work too.
 - Clean wave (no breaches): bonus
 - 5 integrity. Zero is a breach cascade.
 
-First three packets are a short tutorial. Combo 8 starts **Overclock** (2× score, packets slightly slower, gold aura). Every third wave is a burst. Last pip of integrity is a heartbeat. Top 5 runs stay on this machine.
+First three packets are a short tutorial. Combo 8 starts **Overclock** (2× score, packets slightly slower, gold aura). Named ops replace wave numbers (`INTAKE`, `C2 FLOOD`, `STIG SWEEP`…). Every third op is a burst. Last pip of integrity is a heartbeat. Top 5 runs stay on this machine.
 
 Ranks: Intern → Analyst → Threat Hunter → CISO → Ghost Wolf.

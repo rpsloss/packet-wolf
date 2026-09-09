@@ -14,6 +14,17 @@
   </head>
   <body>
     <div id="frame">
+      <video
+        id="sting"
+        class="sting"
+        muted
+        loop
+        playsinline
+        preload="metadata"
+        poster="assets/bg/sting.jpg"
+      >
+        <source src="assets/bg/sting.mp4" type="video/mp4" />
+      </video>
       <canvas id="game" width="1280" height="720" aria-label="Packet Wolf"></canvas>
       <div id="scanlines"></div>
       <div id="vignette"></div>
@@ -23,9 +34,9 @@
           <div class="label">SCORE</div>
           <div id="score" class="value">0</div>
         </div>
-        <div class="hud-block">
-          <div class="label">WAVE</div>
-          <div id="wave" class="value">1</div>
+        <div class="hud-block op-block">
+          <div class="label">OP</div>
+          <div id="wave" class="value">INTAKE</div>
         </div>
         <div class="hud-block combo-block">
           <div class="label">COMBO</div>
