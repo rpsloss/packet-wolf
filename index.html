@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>PACKET WOLF</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=Orbitron:wght@700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/game.css" />
+  </head>
+  <body>
+    <div id="frame">
+      <canvas id="game" width="1280" height="720" aria-label="Packet Wolf"></canvas>
+      <div id="scanlines"></div>
+      <div id="vignette"></div>
+
+      <header id="hud" hidden>
+        <div class="hud-block">
+          <div class="label">SCORE</div>
+          <div id="score" class="value">0</div>
+        </div>
+        <div class="hud-block">
+          <div class="label">WAVE</div>
+          <div id="wave" class="value">1</div>
+        </div>
+        <div class="hud-block combo-block">
+          <div class="label">COMBO</div>
+          <div id="combo" class="value">×1</div>
+        </div>
+        <div class="hud-block integrity-block">
+          <div class="label">INTEGRITY</div>
+          <div id="pips" class="pips"></div>
+        </div>
+      </header>
+
+      <div id="toast"></div>
+
+      <div id="actions" hidden>
+        <button type="button" id="allowBtn" class="act allow">
+          ALLOW <span>F</span>
+        </button>
+        <button type="button" id="dropBtn" class="act drop">
+          DROP <span>SPACE</span>
+        </button>
+      </div>
+
+      <section id="overlay" class="overlay">
+        <div class="panel">
+          <p class="kicker">BOUNDARY DEFENSE // TWO-BUTTON ARCADE</p>
+          <h1>PACKET<br />WOLF</h1>
+          <p class="tag">Classify every packet. Stamp the good. Claw the rest.</p>
+          <ul class="legend">
+            <li>
+              <img src="assets/packets/legit.png" alt="" />
+              <span><b>GREEN LOCK</b> — <em class="go">ALLOW</em></span>
+            </li>
+            <li>
+              <img src="assets/packets/malware.png" alt="" />
+              <span><b>RED SPIKE</b> — <em class="no">DROP</em> malware</span>
+            </li>
+            <li>
+              <img src="assets/packets/phish.png" alt="" />
+              <span><b>GOLD HOOK</b> — <em class="no">DROP</em> phishing</span>
+            </li>
+            <li>
+              <img src="assets/packets/c2.png" alt="" />
+              <span><b>PURPLE DISH</b> — <em class="no">DROP</em> C2 (fast)</span>
+            </li>
+          </ul>
+          <p class="controls">
+            <kbd>W</kbd><kbd>S</kbd> lane
+            <span class="dot">·</span>
+            <kbd>F</kbd> allow
+            <span class="dot">·</span>
+            <kbd>SPACE</kbd> drop
+            <span class="dot">·</span>
+            <kbd>ESC</kbd> pause
+            <br />left click drop · right click allow
+          </p>
+          <button id="startBtn" type="button">PRESS SPACE TO START</button>
+          <p id="bestLine" class="best">BEST 0</p>
+          <ol id="board" class="board"></ol>
+        </div>
+      </section>
+
+      <section id="pause" class="overlay hidden">
+        <div class="panel">
+          <p class="kicker">HOLD</p>
+          <h1>PAUSED</h1>
+          <p class="tag">ESC to resume · M to mute</p>
+        </div>
+      </section>
+    </div>
+    <script src="js/game.js"></script>
+  </body>
+</html>

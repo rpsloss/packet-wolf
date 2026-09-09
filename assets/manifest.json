@@ -1,0 +1,12 @@
+{
+  "style": "stylized 2D arcade, thick outlines, cel shading, noir-cyber palette",
+  "chroma": "magenta keyed to alpha",
+  "wolf": {
+    "cell": [410, 288],
+    "foot": [171, 278],
+    "idle": { "frames": 8, "fps": 8, "loop": true },
+    "attack": { "frames": 8, "fps": 16, "loop": false, "impact": 3 }
+  },
+  "packets": ["legit", "malware", "phish", "c2"],
+  "fps_notes": "idle 8fps breath; attack 16fps one-shot swipe"
+}
