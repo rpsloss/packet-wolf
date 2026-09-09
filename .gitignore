@@ -3,3 +3,7 @@ __pycache__/
 *.pyc
 .venv/
 tools/_shots/
+macos/build/
+macos/AppIcon.iconset/
+macos/AppIcon.icns
+*.app
